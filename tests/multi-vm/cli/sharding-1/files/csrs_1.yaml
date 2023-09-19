@@ -1,0 +1,16 @@
+sharding:
+  clusterRole: configsvr
+replication:
+  replSetName: csrs
+net:
+  bindIp: 0.0.0.0
+  port: 26001
+systemLog:
+  destination: file
+  path: /var/mongodb/db/csrs1.log
+  logAppend: true
+processManagement:
+  fork: true
+storage:
+  dbPath: /var/mongodb/db/csrs1
+

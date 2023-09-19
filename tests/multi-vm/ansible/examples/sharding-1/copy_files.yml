@@ -1,0 +1,44 @@
+- hosts: mongo_all
+  vars:
+    SHARD_NAME: "{{ lookup('env', 'SHARD_NAME') }}"
+  environment:
+    SHARD_NAME: "{{ lookup('env', 'SHARD_NAME') }}"
+  tasks:
+  - name: Remove old dir
+    file:
+      path: "/data/{{ SHARD_NAME }}"
+      state: absent
+    become: true
+    become_user: root
+  - find:
+      paths: /tmp
+      patterns: "mongodb-*"
+    register: find_results
+  - file:
+      path: "{{ item['path'] }}"
+      state: absent
+    with_items: "{{ find_results['files'] }}"
+  - name: Create folders
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: "{{ lookup('env','USER') }}"
+      mode: 0775
+    loop:
+      - "/data/{{ SHARD_NAME }}/db/rs0/"
+      - "/data/{{ SHARD_NAME }}/db/rs1/"
+      - "/data/{{ SHARD_NAME }}/db/rs2/"
+      - "/data/{{ SHARD_NAME }}/db/cfg/"
+      - "/data/{{ SHARD_NAME }}/log/rs0"
+      - "/data/{{ SHARD_NAME }}/log/rs1"
+      - "/data/{{ SHARD_NAME }}/log/rs2"
+      - "/data/{{ SHARD_NAME }}/log/cfg"
+      - "/data/{{ SHARD_NAME }}/init/"
+    become: true
+    become_user: root
+  - name: Copy config files
+    copy:
+      src: files/
+      dest: "/data/{{ SHARD_NAME }}/init"
+    become: true
+    become_user: root

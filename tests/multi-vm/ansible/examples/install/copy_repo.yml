@@ -1,0 +1,9 @@
+- hosts: mongo_all
+  tasks:
+  - name: mongo_repo
+    copy:
+      src: mongodb-org-7.0.repo
+      dest: /etc/yum.repos.d/mongodb-org-7.0.repo
+    become: true
+    become_user: root
+

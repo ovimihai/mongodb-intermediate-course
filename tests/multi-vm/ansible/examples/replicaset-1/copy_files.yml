@@ -1,0 +1,34 @@
+- hosts: mongo_all
+  tasks:
+  - name: Remove old dir
+    file:
+      path: /data/rs0
+      state: absent
+    become: true
+    become_user: root
+  - find:
+      paths: /tmp
+      patterns: "mongodb-*"
+    register: find_results
+  - file:
+      path: "{{ item['path'] }}"
+      state: absent
+    with_items: "{{ find_results['files'] }}"
+  - name: Create folders
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: "{{ lookup('env','USER') }}"
+      mode: 0775
+    loop:
+      - /data/rs0/db/
+      - /data/rs0/log/
+      - /data/rs0/init/
+    become: true
+    become_user: root
+  - name: Copy config files
+    copy:
+      src: files/
+      dest: /data/rs0/init
+    become: true
+    become_user: root

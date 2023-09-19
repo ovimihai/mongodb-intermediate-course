@@ -1,0 +1,95 @@
+version: "3.8"
+
+x-mongo-command: &mongo-command
+  mongod --replSet ${REPLICA_NAME} --config /etc/mongod.conf
+
+x-health-check: &health-check
+  test: [ "CMD","mongosh", "--eval", "db.adminCommand('ping')" ]
+  interval: 5s
+  timeout: 5s
+  retries: 3
+  start_period: 5s
+
+services:
+  mongo1:
+    image: mongo:7.0.1
+    ports:
+      - 27001:27017
+    restart: always
+    command: *mongo-command
+    deploy:
+      placement:
+        constraints: [ node.labels.node == 1 ]
+    volumes:
+      - mongodata:/data/db
+    configs:
+      - source: mongo-conf
+        target: /etc/mongod.conf
+    network_mode: host
+    healthcheck: *health-check
+
+  mongo2:
+    image: mongo:7.0.1
+    ports:
+      - 27002:27017
+    restart: always
+    command: *mongo-command
+    deploy:
+      placement:
+        constraints: [ node.labels.node == 2 ]
+    volumes:
+      - mongodata:/data/db
+    configs:
+      - source: mongo-conf
+        target: /etc/mongod.conf
+    network_mode: host
+    healthcheck: *health-check
+
+  mongo3:
+    image: mongo:7.0.1
+    ports:
+      - 27003:27017
+    restart: always
+    command: *mongo-command
+    deploy:
+      placement:
+        constraints: [ node.labels.node == 3 ]
+    volumes:
+      - mongodata:/data/db
+    configs:
+      - source: mongo-conf
+        target: /etc/mongod.conf
+    network_mode: host
+    healthcheck: *health-check
+
+  mongo-config:
+    image: mongo:7.0.1
+    command: bash /docker-entrypoint-initdb.d/rs-initiate.sh && sleep infinity
+    restart: always
+    deploy:
+      placement:
+        constraints: [ node.labels.node == config ]
+    environment:
+      REPLICA_NAME: ${REPLICA_NAME}
+    configs:
+      - source: rs-init
+        target: /docker-entrypoint-initdb.d/rs-initiate.js
+      - source: rs-init-script
+        target: /docker-entrypoint-initdb.d/rs-initiate.sh
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+
+configs:
+  rs-init:
+    file: rs-initiate.js
+  rs-init-script:
+    file: rs-initiate.sh
+  mongo-conf:
+    file: mongod.conf
+
+volumes:
+  # External true ensures that the volume is not re-created if already present
+  mongodata:
+    external: true

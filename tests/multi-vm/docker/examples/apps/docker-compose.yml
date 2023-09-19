@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:7.0.1
+    command: sleep infinity
+    restart: always
+    environment:
+      REPLICA_NAME: ${REPLICA_NAME}
