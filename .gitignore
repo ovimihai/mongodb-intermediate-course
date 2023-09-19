@@ -1,0 +1,9 @@
+**/*.pyc
+
+!**/.gitkeep
+
+.idea
+
+airflow/personal-vars.sh
+
+secret.pem

@@ -1,6 +1,12 @@
 Sources
 https://github.com/JaimeRC/mongodb-university-courses
+https://github.com/danielabar/mongo-performance
 
+https://learn.mongodb.com/learn/course/m103-basic-cluster-administration
+https://learn.mongodb.com/learn/course/m201-mongodb-performance
+
+Docs
+https://www.mongodb.com/docs/manual/administration/production-notes/
 
 ## Mongod
 
@@ -26,13 +32,24 @@ https://github.com/JaimeRC/mongodb-university-courses
 - data is written on disk
     - write concern (eg: w:3)
     - checkpoint
+- index build - https://www.mongodb.com/docs/v5.0/core/index-creation/
+  - before 4.2 
+    - foreground - locking
+    - background - periodically lock but yield it to read/write operations
+      - if the index doesn't fit in ram will take much more to build
+  - from 4.2
+    - hybrid - the only option - lock at collection level but yield to read/write
+      - lockless, performant - not clear how
+      - https://www.mongodb.com/docs/v5.0/core/index-creation/
+      - explained https://orclbykuber.blogspot.com/2020/02/mongodb-42-hybrid-index-build.html
+
+
+see more query tips - https://www.youtube.com/watch?v=2NDr57QERYA  
 
 ### Journalling
 - jurnal of operations (j:true) flushed with group commits in compressed format
     - ensure consistency
     - atomic, idempotent
-
-
 
 Concepts:
 - changestreams - https://github.com/LinkedInLearning/advanced-mongodb-2476236/blob/main/change-streams/change_stream.py
@@ -56,7 +73,7 @@ Cluster summary
 ReplSet Summary
 - node status
 - repl lag
-elections
+- elections
 - oplog window
 ...
 
@@ -100,6 +117,13 @@ https://infra-pmm2-all-prod.emag.network/graph/d/pmm-qan/pmm-query-analytics?var
 
 
 ## WiredTiger
+- can use multiple cores and lots of ram
+- minimize contention between threads
+  - lock-free algorithms
+  - eliminate blocking due to concurrency control
+- hotter cache and more work per I/O
+  - compact file formats
+  - compression
 
 --storageEngine wiredTiger
 --wiredTigerCacheSizeGB 8
@@ -120,7 +144,7 @@ db.createCollection("test2", {storageEngine: {wiredTiger:{configString: "type=ls
 https://www.mongodb.com/docs/manual/reference/method/db.createCollection/
 https://source.wiredtiger.com/mongodb-3.4/struct_w_t___s_e_s_s_i_o_n.html
 
-WiredTiget ideas (wti) - https://www.youtube.com/watch?v=SMjSjcAePLI 
+WiredTiger ideas (wti) - https://www.youtube.com/watch?v=SMjSjcAePLI 
 
 LSM tree explained - high write rate
 https://www.youtube.com/watch?v=I6jB0nM9SKU
@@ -142,6 +166,21 @@ DB optimizations (wti - 29:00)
 
 compression benchmarks (old, 2015 with photos, mongo3)
 https://www.mongodb.com/blog/post/new-compression-options-mongodb-30
+
+
+## Architecture
+InMemory
+https://www.mongodb.com/docs/manual/core/inmemory/#std-label-storage-inmemory
+**ReplicaSet**
+- 2 inmemory
+- 1 wiredtiger hidden: true, priority:0 - can recover data after crash
+
+**Sharded Cluster**
+One InMemory shardA, other shards cand be persistent
+- 2 inmemory
+- 1 wiredtiger hidden: true, priority:0 - can recover data after crash
+assign to shard by tag
+sh.addTagRange(collection, min, max, "inmem|persistent") - to select destination
 
 
 
