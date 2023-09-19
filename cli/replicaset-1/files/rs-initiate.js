@@ -14,15 +14,15 @@ if (!initialized) {
         "members": [
             {
                 "_id": 0,
-                "host": process.env.HOSTNAME + ":" + parseInt(process.env.RS_PORT)
+                "host": "localhost:" + parseInt(process.env.RS_PORT)
             },
             {
                 "_id": 1,
-                "host": process.env.HOSTNAME + ":" + (parseInt(process.env.RS_PORT) + 1)
+                "host": "localhost:" + (parseInt(process.env.RS_PORT) + 1)
             },
             {
                 "_id": 2,
-                "host": process.env.HOSTNAME + ":" + (parseInt(process.env.RS_PORT) + 2)
+                "host": "localhost:" + (parseInt(process.env.RS_PORT) + 2)
             }
         ]
     };
