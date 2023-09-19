@@ -1,0 +1,11 @@
+sharding:
+  configDB: rs0/localhost:27000,localhost:27001,localhost:27002
+net:
+  bindIp: 0.0.0.0
+  port: 26000
+systemLog:
+  destination: file
+  path: /data/sh/mongos.log
+  logAppend: true
+processManagement:
+  fork: true

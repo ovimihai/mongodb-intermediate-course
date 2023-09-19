@@ -1,0 +1,35 @@
+# for documentation of all options, see:
+#   http://docs.mongodb.org/manual/reference/configuration-options/
+
+# where to write logging data.
+systemLog:
+  destination: file
+  logAppend: true
+  path: ${RS_PATH}/mongod.log
+
+# Where and how to store data.
+storage:
+  dbPath: ${RS_PATH}/db
+
+# how the process runs
+processManagement:
+  timeZoneInfo: /usr/share/zoneinfo
+  fork: true
+
+# network interfaces
+net:
+  port: ${RS_MEMBER_PORT}
+  bindIp: 0.0.0.0  # Enter 0.0.0.0,:: to bind to all IPv4 and IPv6 addresses or, alternatively, use the net.bindIpAll setting.
+
+#security:
+
+#operationProfiling:
+
+replication:
+  replSetName: ${RS_NAME}
+
+#sharding:
+
+## Enterprise-Only Options
+
+#auditLog:
