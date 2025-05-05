@@ -113,8 +113,6 @@ Collection level stats in PMM with `--enable-all-collectors`
     - number of indexes
     - storage size
 
-https://infra-pmm2-all-prod.emag.network/graph/d/pmm-qan/pmm-query-analytics?var-database=rec_ro&var-environment=All&var-cluster=All&var-replication_set=All&var-schema=All&var-node_name=All&var-service_name=All&var-client_host=All&var-username=All&var-service_type=All&var-node_type=All&var-city=All&var-az=All&var-interval=auto&columns=%5B%22load%22,%22num_queries%22,%22query_time%22%5D&group_by=queryid&selected_query_database=rec_ro&filter_by=0be107cfe566ace99a65c1fcdd2ec1f9&order_by=-load&from=now-12h&to=now&totals=false&query_selected&details_tab=examples
-
 
 ## WiredTiger
 - can use multiple cores and lots of ram
